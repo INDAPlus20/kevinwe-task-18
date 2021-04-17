@@ -20,11 +20,21 @@ fn main() {
         let mut index = 1;
     
         while index < line.len(){
-            if pattern == &line[index..(index + pattern.len())] {
-                occurance += 1;
-                index += pattern.len();
+            if line.len() % pattern.len() == 0{
+                if pattern == &line[index..(index + pattern.len())] {
+                    occurance += 1;
+                    index += pattern.len();
+                }
+                else {
+                    index += 1;
+                    occurance = 1;
+                    pattern = &line[0..index];
+                    if pattern.len() > line.len() / 2 {
+                        break;
+                    }
+                }
             }
-            else {
+            else{
                 index += 1;
                 occurance = 1;
                 pattern = &line[0..index];
