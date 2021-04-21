@@ -43,10 +43,11 @@ fn main(){
     let m = pat.len();
     let n = txt.len();
     let mut occurences = 0;
+    let mut last_occurence = 0;
   
     // create lps[] that will hold the longest prefix suffix 
     // values for pattern
-    let mut lps: Vec<usize> = Vec::new();
+    let mut lps: [usize; 250000] = [0; 250000];
     
   
     // Preprocess the pattern (calculate lps[] array)
@@ -75,13 +76,27 @@ fn main(){
             }
         }
     }
-        let mut dict: HashMap<u8, u8> = HashMap::new();
-        let mut uses: HashSet<u8> = HashSet::with_capacity(26);
 
 
     let mut j: usize = 0; // index for pat[]
     let mut i: usize = 0; // index for txt[]
     while i < n{
+        let mut dict: HashMap<u8, u8> = HashMap::new();
+        let mut uses: HashSet<u8> = HashSet::with_capacity(26);
+        for k in 0..pat.len() {
+            if dict.get(&pat[k]) == None {
+                if !uses.insert(pat[k]) {
+                    if j > 0{
+                        j = lps[j-1]
+                    } else {i+=1;}
+                    dict.insert(pat[k], txt[i+k-j]);
+                } else if *dict.get(&pat[k]).unwrap() != txt[i+k-j] {
+                    if j > 0{
+                        j = lps[j-1]
+                    } else {i+=1;}
+                }
+            }
+        }
         if pat[j] == txt[i]{
             i += 1;
             j += 1;
@@ -89,6 +104,7 @@ fn main(){
         if j == m{
             occurences += 1;
             j = lps[j-1];
+            last_occurence = i - m;
         }
         // mismatch after j matches
         else {if i < n && pat[j] != txt[i]{
@@ -100,7 +116,7 @@ fn main(){
         }
     }
     if occurences == 1{
-
+        println!("{}", message[last_occurence..(last_occurence + m)].to_string())
     } else {println!("{}", occurences)}
 }
 
@@ -169,4 +185,3 @@ fn main(){
 //        println!("{}", message[latest..(latest + fragment.len())].to_string());
 //    }
 //    else {println!("{}", occurance);}
-//}
